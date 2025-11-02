@@ -8,6 +8,7 @@ import {
 } from '@metuuu/filter-youtube-comments/src/comment-analysis/RedFlags'
 import {
   Alert,
+  Avatar,
   Button,
   Card,
   FormControl,
@@ -20,6 +21,7 @@ import {
 import { useState } from 'react'
 import CommentList from './components/CommentList'
 import RedFlagConfigSection from './components/RedFlagConfigSection'
+import { useGoogleAuth } from './hooks/useGoogleAuth'
 import styles from './page.module.css'
 import { errorToMessage } from './utils/error-utils'
 
@@ -27,7 +29,17 @@ const DEFAULT_RED_FLAG_CONFIG = RedFlagConfigTemplates.CryptoBots
 
 export default function Home() {
   'use memo'
-  const isApiKeyPreconfigured = !!process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
+  const {
+    user,
+    isAuthenticated,
+    isConfigured,
+    login,
+    logout,
+    isLoading: isSigningIn,
+    error: authError,
+    clientId,
+    updateClientId,
+  } = useGoogleAuth()
 
   const [redFlagConfig, setRedFlagConfig] = useState<RedFlagsConfig>(() => {
     // Try to load from localStorage on initial mount
@@ -69,19 +81,22 @@ export default function Home() {
   const [comments, setComments] = useState<Comment[]>()
 
   const onAnalyzeClicked = () => {
-    if (!videoId) return setAnalysisError(new Error('Please provide a YouTube Video ID'))
-    if (!youtubeApiKey) return setAnalysisError(new Error('Please provide a YouTube API Key'))
     setAnalysisError(undefined)
     setIsAnalyzing(true)
+
+    const authParams = user?.accessToken
+      ? { youtubeAccessToken: user.accessToken }
+      : { youtubeApiKey }
+
     analyze({
-      youtubeApiKey,
+      ...authParams,
       youtubeVideoId: videoId,
       redFlags: redFlagConfig.flags,
       redFlagWeightThreshold: 1,
       commentQueryOrder,
       maxTopLevelComments,
       maxCommentsInThread,
-    })
+    } as any)
       .then((result) => {
         const analyzedComments = Object.values<Comment[]>(result).flatMap((o) => o)
         if (!analyzedComments.length) throw new Error('No comments found with red flags')
@@ -120,76 +135,144 @@ export default function Home() {
                 YouTube scam comment cleaner
               </Typography>
 
-              <TextField
-                label="YouTube Video ID"
-                variant="outlined"
-                color="secondary"
-                value={videoId}
-                type="text"
-                autoComplete="off"
-                required
-                onChange={(e) => setVideoId(e.target.value.trim())}
-              />
-              {!isApiKeyPreconfigured && (
+              {/* Authentication Section */}
+              <FlexColumn gap={16}>
+                <Typography variant="h6" color="textPrimary">
+                  Authentication
+                </Typography>
+                <Alert severity="info">
+                  Authenticate via API key or sign in with Google. If you want to be able to remove
+                  comments from your videos, you must sign in with Google.
+                </Alert>
+
+                {!isAuthenticated && (
+                  <TextField
+                    className={styles.passwordInput}
+                    label="YouTube API Key"
+                    variant="outlined"
+                    color="secondary"
+                    value={youtubeApiKey}
+                    onChange={(e) => setYouTubeApiKey(e.target.value)}
+                    autoComplete="off"
+                  />
+                )}
+
                 <TextField
                   className={styles.passwordInput}
-                  label="YouTube API Key"
+                  label="Google OAuth Client ID (For sign in with Google)"
                   variant="outlined"
                   color="secondary"
-                  value={youtubeApiKey}
-                  required
-                  onChange={(e) => setYouTubeApiKey(e.target.value)}
+                  value={clientId}
+                  onChange={(e) => updateClientId(e.target.value.trim())}
                   autoComplete="off"
                 />
-              )}
 
-              <FormControl color="secondary">
-                <InputLabel>Comment query order</InputLabel>
-                <Select
-                  value={commentQueryOrder}
-                  label="Comment query order"
-                  onChange={(e) => setCommentQueryOrder(e.target.value as any)}>
-                  <MenuItem value="relevance">Relevance</MenuItem>
-                  <MenuItem value="time">Time</MenuItem>
-                </Select>
-              </FormControl>
-              <FlexRow justifyContent="space-between" gap={16}>
+                {isConfigured && (
+                  <FlexColumn gap={8}>
+                    {!isAuthenticated ? (
+                      <>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={login}
+                          disabled={isSigningIn}>
+                          {isSigningIn ? 'Signing in...' : 'Sign in with Google'}
+                        </Button>
+                      </>
+                    ) : (
+                      <FlexRow
+                        gap={8}
+                        style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+                        <FlexRow gap={8} style={{ alignItems: 'center' }}>
+                          <Avatar
+                            src={user?.picture}
+                            alt={user?.name}
+                            sx={{ width: 32, height: 32 }}
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            {user?.email}
+                          </Typography>
+                        </FlexRow>
+                        <Button size="small" variant="outlined" color="secondary" onClick={logout}>
+                          Sign out
+                        </Button>
+                      </FlexRow>
+                    )}
+                    {authError && <Alert severity="error">{authError}</Alert>}
+                  </FlexColumn>
+                )}
+              </FlexColumn>
+
+              {/* Video Section */}
+              <FlexColumn gap={16} style={{ marginTop: 16 }}>
+                <Typography variant="h6" color="textPrimary">
+                  Video
+                </Typography>
                 <TextField
-                  fullWidth
-                  label="Max comments"
+                  label="YouTube Video ID"
                   variant="outlined"
                   color="secondary"
-                  value={maxTopLevelComments}
-                  type="number"
-                  onChange={(e) =>
-                    setMaxTopLevelComments(e.target.value ? parseInt(e.target.value) : undefined)
-                  }
+                  value={videoId}
+                  type="text"
+                  autoComplete="off"
+                  required
+                  onChange={(e) => setVideoId(e.target.value.trim())}
                 />
-                <TextField
-                  fullWidth
-                  label="Max comments per thread"
-                  variant="outlined"
-                  color="secondary"
-                  value={maxCommentsInThread}
-                  type="number"
-                  onChange={(e) =>
-                    setMaxCommentsInThread(e.target.value ? parseInt(e.target.value) : undefined)
-                  }
-                />
-              </FlexRow>
 
-              <RedFlagConfigSection
-                redFlagConfig={redFlagConfig}
-                setRedFlagConfig={setRedFlagConfig}
-                isAnalyzing={isAnalyzing}
-                defaultConfig={DEFAULT_RED_FLAG_CONFIG}
-              />
+                <FormControl color="secondary">
+                  <InputLabel>Comment query order</InputLabel>
+                  <Select
+                    value={commentQueryOrder}
+                    label="Comment query order"
+                    onChange={(e) => setCommentQueryOrder(e.target.value as any)}>
+                    <MenuItem value="relevance">Relevance</MenuItem>
+                    <MenuItem value="time">Time</MenuItem>
+                  </Select>
+                </FormControl>
+                <FlexRow justifyContent="space-between" gap={16}>
+                  <TextField
+                    fullWidth
+                    label="Max comments"
+                    variant="outlined"
+                    color="secondary"
+                    value={maxTopLevelComments}
+                    type="number"
+                    onChange={(e) =>
+                      setMaxTopLevelComments(e.target.value ? parseInt(e.target.value) : undefined)
+                    }
+                  />
+                  <TextField
+                    fullWidth
+                    label="Max comments per thread"
+                    variant="outlined"
+                    color="secondary"
+                    value={maxCommentsInThread}
+                    type="number"
+                    onChange={(e) =>
+                      setMaxCommentsInThread(e.target.value ? parseInt(e.target.value) : undefined)
+                    }
+                  />
+                </FlexRow>
+              </FlexColumn>
+
+              {/* Red Flags Configuration Section */}
+              <FlexColumn gap={16} style={{ marginTop: 16 }}>
+                <Typography variant="h6" color="textPrimary">
+                  Red Flags Configuration
+                </Typography>
+                <RedFlagConfigSection
+                  redFlagConfig={redFlagConfig}
+                  setRedFlagConfig={setRedFlagConfig}
+                  isAnalyzing={isAnalyzing}
+                  defaultConfig={DEFAULT_RED_FLAG_CONFIG}
+                />
+              </FlexColumn>
 
               <FlexColumn gap={16} style={{ marginTop: 16 }}>
                 <Button
                   variant="contained"
                   color="secondary"
-                  disabled={isAnalyzing}
+                  disabled={isAnalyzing || (!isAuthenticated && !youtubeApiKey) || !videoId}
                   onClick={() => onAnalyzeClicked()}>
                   Analyze comments
                 </Button>
@@ -218,7 +301,12 @@ export default function Home() {
           </Typography>
         </FlexRow> */}
 
-          <CommentList comments={comments!} apiKey={youtubeApiKey} />
+          <CommentList
+            comments={comments!}
+            apiKey={youtubeApiKey}
+            accessToken={user?.accessToken}
+            isAuthenticated={isAuthenticated}
+          />
         </FlexColumn>
       )}
     </main>

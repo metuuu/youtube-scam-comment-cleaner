@@ -8,12 +8,11 @@ import getVideo from './src/getVideo'
 export type AnalyzeOptions = {
   redFlagWeightThreshold: number
   youtubeVideoId: string
-  youtubeApiKey: string
   redFlags: RedFlag[]
   maxTopLevelComments?: number
   maxCommentsInThread?: number
   commentQueryOrder?: 'time' | 'relevance'
-}
+} & ({ youtubeApiKey: string } | { youtubeAccessToken: string })
 
 export type CommentRedFlag = {
   id: string
@@ -40,27 +39,33 @@ const analyze = async (options: AnalyzeOptions) => {
   const {
     redFlags,
     redFlagWeightThreshold,
-    youtubeApiKey,
     youtubeVideoId,
     commentQueryOrder,
     maxTopLevelComments = 100,
     maxCommentsInThread = 100,
+    ...auth
   } = options
   const output: { [commentId: string]: Comment[] } = {}
 
+  // Prepare auth object for API calls
+  const apiAuth =
+    'youtubeApiKey' in auth
+      ? { apiKey: auth.youtubeApiKey }
+      : { accessToken: auth.youtubeAccessToken }
+
   // Get channel id from video
-  const video = await getVideo({ videoId: youtubeVideoId, apiKey: youtubeApiKey })
+  const video = await getVideo({ videoId: youtubeVideoId, ...apiAuth })
   if (!video?.snippet?.channelId) throw new Error('Video not found')
 
   // Get channel author
-  const channel = await getChannel({ channelId: video.snippet.channelId, apiKey: youtubeApiKey })
+  const channel = await getChannel({ channelId: video.snippet.channelId, ...apiAuth })
 
   // Get threads for video
   const threads = await getThreads({
     videoId: youtubeVideoId,
-    apiKey: youtubeApiKey,
     maxResults: maxTopLevelComments,
     order: commentQueryOrder,
+    ...apiAuth,
   })
 
   // Analyze thread comments
@@ -82,8 +87,8 @@ const analyze = async (options: AnalyzeOptions) => {
         // multiple comments
         const comments = await getComments({
           parentId: topLevelCommentId,
-          apiKey: youtubeApiKey,
           maxResults: maxCommentsInThread,
+          ...apiAuth,
         })
         const results = await Promise.all([
           analyzeComment({ channel, comment: topLevelComment, redFlags }),

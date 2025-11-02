@@ -31,9 +31,18 @@ npm start
 ```
 
 
-## Creating YouTube API key
+## Authentication
 
-**WARNING: BEFORE YOU CREATE AN API KEY. PLEASE UNDERSTAND WHAT IT IS USED FOR AND DO NOT SHARE IT WITH ANYONE!**
+This application requires two types of authentication:
+
+### a. YouTube API key (For fetching comments)
+Used for reading video data and comments.
+
+### b. Google OAuth2 (Required for moderating comments)
+If Google Oauth2 is used, YouTube API key isn't needed.\
+The [Comments: setModerationStatus](https://developers.google.com/youtube/v3/docs/comments/setModerationStatus) endpoint requires OAuth2 authentication and cannot use API keys alone. You must sign in with Google to be able to moderate comments.
+
+**WARNING: BEFORE YOU CREATE EITHER AN API KEY OR AN OAUTH2 CLIENT. PLEASE UNDERSTAND WHAT THEY ARE USED FOR AND DO NOT SHARE THEM WITH ANYONE!**
 
 See: https://developers.google.com/youtube/v3/docs
 
@@ -42,7 +51,7 @@ This application only uses these endpoints:
  - [Channels: list](https://developers.google.com/youtube/v3/docs/channels/list)
  - [CommentThreads: list](https://developers.google.com/youtube/v3/docs/commentThreads/list)
  - [Comments: list](https://developers.google.com/youtube/v3/docs/comments/list)
- - [Comments: setModerationStatus](https://developers.google.com/youtube/v3/docs/comments/setModerationStatus)
+ - [Comments: setModerationStatus](https://developers.google.com/youtube/v3/docs/comments/setModerationStatus) **(requires OAuth2)**
 
 
 
@@ -56,11 +65,29 @@ And you could set an IP address restriction for the API key for example.
 
 ## Configuring the API key
 
-You can either paste the YouTube API key to the input field or pre configure it to environment file by creating `.env.local` file with content:
+You can either paste the YouTube API key to an input field or pre configure it to environment file by creating `.env.local` file in the `web` directory with content:
 ```
 NEXT_PUBLIC_YOUTUBE_API_KEY=<youtube-api-key>
 ```
-Note that the input field is hidden when the API key is configured via the env file.
+
+## Configuring OAuth2 (Required for moderating comments)
+
+To enable the comment moderating feature, you need to set up Google OAuth2:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Select your project (or create a new one)
+3. Go to "APIs & Services" > "Credentials" (https://console.cloud.google.com/apis/credentials)
+4. Click "Create Credentials" > "OAuth 2.0 Client ID"
+5. Configure OAuth consent screen
+6. Add you Google account email (what you will be using for signing in) as "audience" to https://console.cloud.google.com/auth/audience
+7. Choose "Web application" as application type
+8. Add **Authorized JavaScript origins**:
+   - URL where the app is hosted (e.g., `https://yourdomain.com`)
+9. Add **Authorized redirect URIs**:
+   - URL where the app is hosted (e.g., `https://yourdomain.com`)
+10. Click "Create" and copy the Client ID
+
+Once copied, you can paste the Client ID to "Google OAuth Client ID" input field in the app and "Sign in with Google" button should appear.
 
 ## API Key quota
 
@@ -71,7 +98,7 @@ The only significant quota usages are:
   Single "list comments" request uses `1 unit` and returns up to 100 comments.\
   When listing more than 100 comments, the list comment endpoint is called multiple times.
 - **Hiding comments (setModerationStatus)**\
-  Hiding a comments uses `50 units`. You can hide max 200 comments with a single API key unless you request more quota from Google.
+  Hiding a comments uses `50 units`. TODO: Check what is the max quota when signed in with Oauth2?
 
 You can check your remaining quota from: https://console.cloud.google.com/apis/api/youtube.googleapis.com/quotas
 

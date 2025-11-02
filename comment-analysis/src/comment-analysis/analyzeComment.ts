@@ -19,8 +19,8 @@ export default async function analyzeComment({
   const channelSnippet = channel!.snippet!
 
   // Ignore channel author comments
-  if (commentSnippet!.authorChannelId!.value === channel.id)
-    return { comment, redFlags: [], totalRedFlagWeight: 0 }
+  // if (commentSnippet!.authorChannelId!.value === channel.id)
+  //   return { comment, redFlags: [], totalRedFlagWeight: 0 }
 
   let triggeredRedFlags: CommentRedFlag[] = []
   let totalTriggeredRedFlagWeight = 0

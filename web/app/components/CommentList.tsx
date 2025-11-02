@@ -18,9 +18,20 @@ import {
 import { useWindowSize } from '@uidotdev/usehooks'
 import React, { useEffect, useRef, useState } from 'react'
 import useFilters from '../hooks/useFilters'
+import { errorToMessage } from '../utils/error-utils'
 import CommentListItem from './CommentListItem'
 
-const CommentList = ({ apiKey, comments }: { apiKey: string; comments: Comment[] }) => {
+const CommentList = ({
+  apiKey,
+  comments,
+  accessToken,
+  isAuthenticated,
+}: {
+  apiKey: string
+  comments: Comment[]
+  accessToken?: string
+  isAuthenticated: boolean
+}) => {
   'use memo'
   // Selection
   const [hiddenComments, setHiddenComments] = useState<Set<string>>(new Set())
@@ -75,41 +86,34 @@ const CommentList = ({ apiKey, comments }: { apiKey: string; comments: Comment[]
   // Deletion
   const [isHidePromptOpen, setIsHideCommentsPromptOpen] = useState(false)
   const [isHidingComments, setIsHidingComments] = useState(false)
-  const [commentsFailedToHide, setCommentsFailedToHide] = useState<string[]>([])
-  const [commentsSuccessfullyHidden, setCommentsSuccessfullyHidden] = useState<string[]>([])
   const [errorMessage, setErrorMessage] = useState<string>()
-  const handleDeleteSelectedComments = () => {
-    setCommentsFailedToHide([])
-    setCommentsSuccessfullyHidden([])
+  const [isAuthAlertOpen, setIsAuthAlertOpen] = useState(false)
+
+  const handleBanSelectedComments = () => {
     setIsHidingComments(true)
-    Promise.allSettled(
-      Array.from(selectedComments).map((commentId) =>
-        hideComment({ apiKey, commentId })
-          .then(() => setCommentsSuccessfullyHidden((o) => [...o, commentId]))
-          .catch(() => setCommentsFailedToHide((o) => [...o, commentId])),
-      ),
-    ).finally(() => {
-      setCommentsFailedToHide((commentsFailedToHide) => {
-        if (commentsFailedToHide.length)
-          setErrorMessage(`Failed to hide "${commentsFailedToHide.length}" comments.`)
-        return []
-      })
-      setCommentsSuccessfullyHidden((hiddenComments) => {
+    const commentIdsToHide = Array.from(selectedComments)
+
+    hideComment({ accessToken, commentIds: commentIdsToHide })
+      .then(() => {
         setHiddenComments((comments) => {
           const updated = new Set(comments)
-          hiddenComments.forEach((id) => updated.add(id))
+          commentIdsToHide.forEach((id) => updated.add(id))
           return updated
         })
         setSelectedComments((comments) => {
           const updated = new Set(comments)
-          hiddenComments.forEach((id) => updated.delete(id))
+          commentIdsToHide.forEach((id) => updated.delete(id))
           return updated
         })
-        return []
       })
-      setIsHidingComments(false)
-      setIsHideCommentsPromptOpen(false)
-    })
+      .catch((err) => {
+        console.error('Failed to hide comments', err)
+        setErrorMessage(`Failed to ban the comments: ${errorToMessage(err)}`)
+      })
+      .finally(() => {
+        setIsHidingComments(false)
+        setIsHideCommentsPromptOpen(false)
+      })
   }
 
   // Exporting
@@ -148,26 +152,22 @@ const CommentList = ({ apiKey, comments }: { apiKey: string; comments: Comment[]
         open={isHidePromptOpen}
         onClose={() => setIsHideCommentsPromptOpen(false)}
         variant="destructive"
-        title={`Are you sure you want to hide the ${selectedComments.size} selected comments from you video comments section?`}
-        proceedButtonText="Hide comments"
+        title={`Are you sure you want ban "${selectedComments.size}" selected comments by setting moderation status to "rejected" for them? The selected comments won't be visible under your video after this.`}
+        proceedButtonText="Ban the comments"
         loading={isHidingComments}
-        progress={
-          isHidingComments
-            ? Math.round((commentsSuccessfullyHidden.length / selectedComments.size) * 100) / 100
-            : undefined
-        }
-        progressText={
-          isHidingComments
-            ? `Hiding comments: ${commentsSuccessfullyHidden.length + commentsFailedToHide.length + 1}/${selectedComments.size}`
-            : undefined
-        }
-        onProceed={() => handleDeleteSelectedComments()}
+        onProceed={() => handleBanSelectedComments()}
       />
       <AlertDialog
         open={!!errorMessage}
         title="Error"
         text={errorMessage}
         onClose={() => setErrorMessage(undefined)}
+      />
+      <AlertDialog
+        open={isAuthAlertOpen}
+        title="Authentication Required"
+        text="You must sign in with Google to hide comments. Please sign in with Google Account to enable this feature."
+        onClose={() => setIsAuthAlertOpen(false)}
       />
 
       <Container disableGutters={(size.width || 0) > 1024 + 24}>
@@ -210,10 +210,14 @@ const CommentList = ({ apiKey, comments }: { apiKey: string; comments: Comment[]
                 <Button
                   variant="contained"
                   disabled={!selectedComments.size}
-                  onClick={() => setIsHideCommentsPromptOpen(true)}>
+                  onClick={() => {
+                    return setIsHideCommentsPromptOpen(true)
+                    if (!isAuthenticated || !accessToken) setIsAuthAlertOpen(true)
+                    else setIsHideCommentsPromptOpen(true)
+                  }}>
                   <DeleteIcon style={{ paddingRight: 4 }} />
                   <Typography variant="body2" fontWeight="bold" style={{ whiteSpace: 'nowrap' }}>
-                    Hide selected
+                    Ban selected
                   </Typography>
                 </Button>
               </FlexColumn>

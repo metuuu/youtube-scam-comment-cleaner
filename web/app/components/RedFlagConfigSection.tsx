@@ -107,9 +107,9 @@ export default function RedFlagConfigSection({
   }
 
   return (
-    <FlexColumn style={{ marginTop: 16 }}>
+    <FlexColumn>
       <Typography variant="h6" color="primary">
-        Red flags configuration &quot;{redFlagConfig.name}&quot;
+        &quot;{redFlagConfig.name}&quot;
       </Typography>
       <FlexRow gap={8} style={{ marginTop: 8 }}>
         <Button
