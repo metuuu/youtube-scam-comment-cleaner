@@ -49,88 +49,16 @@
           "oneOf": [
             {
               "type": "string",
-              "description": "A simple string to check for."
+              "description": "A simple string to check for. If you want to use a regular expression, please add \"RegExp\" prefix. Example: \"RegExp/foo/\""
             },
             {
-              "type": "object",
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "value": {
-                        "description": "If you want to use a regular expression, please add \"RegExp\" prefix. Example: \"RegExp\\foo\\\"",
-                        "type": "string"
-                      },
-                      "minNumberOfOccurrences": {
-                        "type": "integer",
-                        "description": "Minimum number of occurrences required.",
-                        "minimum": 1
-                      },
-                      "weight": {
-                        "type": "number",
-                        "description": "Weight applied if the condition matches.",
-                        "minimum": 0
-                      }
-                    },
-                    "required": [
-                      "value"
-                    ]
-                  }
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "specialCharacters": {
-                      "type": "boolean",
-                      "const": true
-                    },
-                    "allowedCharacters": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      },
-                      "description": "A list of allowed characters."
-                    },
-                    "weight": {
-                      "type": "number",
-                      "description": "Weight applied if special characters match.",
-                      "minimum": 0
-                    }
-                  },
-                  "required": [
-                    "specialCharacters"
-                  ]
-                },
-                {
-                  "type": "object",
-                  "properties": {
-                    "similarity": {
-                      "type": "number",
-                      "description": "The similarity threshold between 'toCheck' and 'value'.",
-                      "minimum": 0,
-                      "maximum": 1
-                    },
-                    "value": {
-                      "type": "string",
-                      "description": "The string to check for similarity."
-                    },
-                    "weight": {
-                      "type": "number",
-                      "description": "Weight applied if similarity matches.",
-                      "minimum": 0
-                    }
-                  },
-                  "required": [
-                    "similarity",
-                    "value"
-                  ]
-                }
-              ]
+              "$ref": "#/$defs/ContainsWithOptions"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ContainsWithOptions"
+              }
             }
           ]
         },
@@ -139,6 +67,9 @@
             {
               "type": "boolean",
               "description": "Indicates whether to preprocess input before comparison."
+            },
+            {
+              "$ref": "#/$defs/NormalizeOptions"
             },
             {
               "type": "object",
@@ -163,7 +94,8 @@
                     }
                   ]
                 }
-              }
+              },
+              "additionalProperties": false
             }
           ]
         },
@@ -182,7 +114,96 @@
           "description": "Maximum weight this red flag can accumulate.",
           "minimum": 0
         }
-      }
+      },
+      "additionalProperties": false
+    },
+    "ContainsWithOptions": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "description": "If you want to use a regular expression, please add \"RegExp\" prefix. Example: \"RegExp/foo/\""
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "If you want to use a regular expression, please add \"RegExp\" prefix. Example: \"RegExp/foo/\""
+                  }
+                }
+              ]
+            },
+            "minNumberOfOccurrences": {
+              "type": "integer",
+              "description": "Minimum number of occurrences required. If not set, defaults to all (when value is an array) or 1 (when value is a string).",
+              "minimum": 1
+            },
+            "weight": {
+              "type": "number",
+              "description": "Weight applied if the condition matches.",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "specialCharacters": {
+              "type": "boolean",
+              "const": true
+            },
+            "allowedCharacters": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "A list of allowed characters."
+            },
+            "weight": {
+              "type": "number",
+              "description": "Weight applied if special characters match.",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "specialCharacters"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "similarity": {
+              "type": "number",
+              "description": "The similarity threshold between 'toCheck' and 'value'.",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "value": {
+              "type": "string",
+              "description": "The string to check for similarity."
+            },
+            "weight": {
+              "type": "number",
+              "description": "Weight applied if similarity matches.",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "similarity",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ]
     },
     "NormalizeOptions": {
       "type": "object",

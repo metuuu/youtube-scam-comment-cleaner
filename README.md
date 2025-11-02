@@ -114,12 +114,12 @@ The app uses a default "<b>Crypto Bots</b>" configuration that tries to detect m
 
 You can also provide your own configuration `.json` file via `LOAD CONFIG` button.
 
-### Configuring:
+### Configuring the `.json` file
 
 Create `custom-red-flags.json` file with this content:
 ```.json
 {
-  "$schema": "https://github.com/metuuu/youtube-scam-comment-cleaner/blob/main/comment-analysis/src/comment-analysis/red-flags-config-schema.json",
+  "$schema": "https://raw.githubusercontent.com/metuuu/youtube-scam-comment-cleaner/main/comment-analysis/src/comment-analysis/red-flags-config-schema.json",
   "name": "Custom Red Flags",
   "flags": [
     {}
