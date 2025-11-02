@@ -71,6 +71,7 @@ const CommentListItem = (props: {
                   {/* Channel name and date */}
                   <FlexRow gap={4}>
                     <Typography variant="caption" color="textSecondary">
+                      {/* eslint-disable-next-line react-hooks/purity */}
                       {comment.authorDisplayName} · {formatDistance(comment.updatedAt, Date.now())}{' '}
                       ago
                     </Typography>

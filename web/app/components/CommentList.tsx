@@ -64,6 +64,7 @@ const CommentList = ({ apiKey, comments }: { apiKey: string; comments: Comment[]
 
   // Deselection on filtering
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedComments(
       new Set(
         Array.from(selectedComments).filter((commentId) => filteredCommentIds.includes(commentId)),

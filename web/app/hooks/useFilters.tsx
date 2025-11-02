@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 import FlexRow from '@/components/FlexRow'
 import areArraysEqual from '@/utils/areArraysEqual'
 import sumByProperty from '@/utils/sumByProperty'
@@ -163,9 +164,7 @@ const useFilters = ({
       filteredComments = filteredCommentsB
       // eslint-disable-next-line react-compiler/react-compiler
       refFilteredCommentsB.current = filteredCommentsB
-    }
-    // eslint-disable-next-line react-compiler/react-compiler
-    else filteredComments = refFilteredCommentsB.current!
+    } else filteredComments = refFilteredCommentsB.current!
   }
 
   // Sorting
