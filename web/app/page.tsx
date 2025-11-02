@@ -49,6 +49,8 @@ export default function Home() {
   }
 
   const onAnalyzeClicked = () => {
+    if (!videoId) return setAnalysisError(new Error('Please provide a YouTube Video ID'))
+    if (!youtubeApiKey) return setAnalysisError(new Error('Please provide a YouTube API Key'))
     setAnalysisError(undefined)
     setIsAnalyzing(true)
     analyze({
@@ -110,6 +112,7 @@ export default function Home() {
                 value={videoId}
                 type="text"
                 autoComplete="off"
+                required
                 onChange={(e) => setVideoId(e.target.value.trim())}
               />
               {!isApiKeyPreconfigured && (
@@ -119,6 +122,7 @@ export default function Home() {
                   variant="outlined"
                   color="secondary"
                   value={youtubeApiKey}
+                  required
                   onChange={(e) => setYouTubeApiKey(e.target.value)}
                   autoComplete="off"
                 />
