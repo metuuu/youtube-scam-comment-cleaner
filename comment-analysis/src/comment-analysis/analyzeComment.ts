@@ -36,7 +36,12 @@ export default async function analyzeComment({ channel, comment, redFlags }: { c
 
 
     for (const check of toCheck || ['authorName', 'comment']) {
-      const input = check === 'authorName' ? commentAuthor.displayName : commentSnippet.textOriginal!
+      let input = check === 'authorName' ? commentAuthor.displayName : commentSnippet.textOriginal!
+
+      if (check === 'comment') {
+        // This is a special case handling. YouTube comments with @ reply contain "&ZeroWidthSpace;" before the @ symbol. We want to remove this because this doesn't show up to user and confuses red flags checker.
+        input = input.replace("^\u200B", "")
+      }
 
       let preprocessingToUse: NormalizeOptions | boolean = false
       if (preprocessing !== false) preprocessingToUse = true
