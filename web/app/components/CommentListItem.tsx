@@ -114,6 +114,7 @@ const CommentListItem = (props: {
                             label={name}
                             disabled={disabledRedFlags.includes(id)}
                             size="small"
+                            color="warning"
                             variant="outlined"
                           />
                         ))}
