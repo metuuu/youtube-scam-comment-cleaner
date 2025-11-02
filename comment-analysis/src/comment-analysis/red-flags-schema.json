@@ -63,15 +63,8 @@
                     "type": "object",
                     "properties": {
                       "value": {
-                        "oneOf": [
-                          {
-                            "type": "string"
-                          },
-                          {
-                            "type": "object",
-                            "instanceof": "RegExp"
-                          }
-                        ]
+                        "description": "If you want to use a regular expression, please add \"RegExp\" prefix. Example: \"RegExp\\foo\\\"",
+                        "type": "string"
                       },
                       "minNumberOfOccurrences": {
                         "type": "integer",

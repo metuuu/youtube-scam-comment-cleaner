@@ -2,8 +2,9 @@
 import FlexColumn from '@/components/FlexColumn'
 import FlexRow from '@/components/FlexRow'
 import analyze, { Comment } from '@metuuu/filter-youtube-comments'
-import RedFlagTemplates, {
-  RedFlag,
+import {
+  RedFlagConfigTemplates,
+  RedFlagsConfig,
 } from '@metuuu/filter-youtube-comments/src/comment-analysis/RedFlags'
 import {
   Alert,
@@ -18,14 +19,43 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import CommentList from './components/CommentList'
+import RedFlagConfigSection from './components/RedFlagConfigSection'
 import styles from './page.module.css'
 import { errorToMessage } from './utils/error-utils'
+
+const DEFAULT_RED_FLAG_CONFIG = RedFlagConfigTemplates.CryptoBots
 
 export default function Home() {
   'use memo'
   const isApiKeyPreconfigured = !!process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
 
-  const [redFlags, setRedFlags] = useState<RedFlag[]>(Object.values(RedFlagTemplates))
+  const [redFlagConfig, setRedFlagConfig] = useState<RedFlagsConfig>(() => {
+    // Try to load from localStorage on initial mount
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem('redFlagsConfig')
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached)
+          if (
+            parsed &&
+            typeof parsed === 'object' &&
+            'name' in parsed &&
+            'flags' in parsed &&
+            Array.isArray(parsed.flags)
+          ) {
+            return { name: parsed.name, flags: parsed.flags }
+          } else if (Array.isArray(parsed)) {
+            // Legacy format: just an array of flags
+            return { name: 'Default', flags: parsed }
+          }
+        } catch (err) {
+          console.error('Failed to load red flag config from localStorage:', err)
+          console.log('Falling back to default config')
+        }
+      }
+    }
+    return DEFAULT_RED_FLAG_CONFIG
+  })
   const [videoId, setVideoId] = useState('')
   const [youtubeApiKey, setYouTubeApiKey] = useState(process.env.NEXT_PUBLIC_YOUTUBE_API_KEY || '')
 
@@ -38,15 +68,6 @@ export default function Home() {
 
   const [comments, setComments] = useState<Comment[]>()
 
-  const onViewConfigurationClicked = () => {
-    Object.defineProperty(RegExp.prototype, 'toJSON', {
-      value: RegExp.prototype.toString,
-    })
-    const blob = new Blob([JSON.stringify(redFlags, undefined, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    window.open(url, '_blank')
-  }
-
   const onAnalyzeClicked = () => {
     if (!videoId) return setAnalysisError(new Error('Please provide a YouTube Video ID'))
     if (!youtubeApiKey) return setAnalysisError(new Error('Please provide a YouTube API Key'))
@@ -55,7 +76,7 @@ export default function Home() {
     analyze({
       youtubeApiKey,
       youtubeVideoId: videoId,
-      redFlags,
+      redFlags: redFlagConfig.flags,
       redFlagWeightThreshold: 1,
       commentQueryOrder,
       maxTopLevelComments,
@@ -98,11 +119,6 @@ export default function Home() {
               <Typography variant="h4" color="primary" style={{ marginBottom: 16 }}>
                 YouTube scam comment cleaner
               </Typography>
-
-              {/* <Typography variant="body1">
-                Please provide the YouTube video ID
-                {!isApiKeyPreconfigured && ' and API key'}.
-              </Typography> */}
 
               <TextField
                 label="YouTube Video ID"
@@ -162,24 +178,22 @@ export default function Home() {
                 />
               </FlexRow>
 
-              <FlexColumn>
-                {analysisError && <Alert severity="error">{errorToMessage(analysisError)}</Alert>}
-                <Button
-                  variant="outlined"
-                  style={{ marginTop: 16 }}
-                  disabled={isAnalyzing}
-                  color="secondary"
-                  onClick={() => onViewConfigurationClicked()}>
-                  View red flags configuration
-                </Button>
+              <RedFlagConfigSection
+                redFlagConfig={redFlagConfig}
+                setRedFlagConfig={setRedFlagConfig}
+                isAnalyzing={isAnalyzing}
+                defaultConfig={DEFAULT_RED_FLAG_CONFIG}
+              />
+
+              <FlexColumn gap={16} style={{ marginTop: 16 }}>
                 <Button
                   variant="contained"
-                  style={{ marginTop: 16 }}
                   color="secondary"
                   disabled={isAnalyzing}
                   onClick={() => onAnalyzeClicked()}>
                   Analyze comments
                 </Button>
+                {analysisError && <Alert severity="error">{errorToMessage(analysisError)}</Alert>}
               </FlexColumn>
             </FlexColumn>
           </Card>
