@@ -1,166 +1,196 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "required": ["id", "name", "contains"],
-    "properties": {
-      "id": {
-        "type": "string",
-        "description": "Unique identifier for the red flag."
-      },
-      "name": {
-        "type": "string",
-        "description": "Name of the red flag."
-      },
-      "toCheck": {
-        "type": "array",
-        "items": {
-          "type": "string",
-          "enum": ["authorName", "comment"]
-        },
-        "description": "The fields to check, either 'authorName' or 'comment'."
-      },
-      "contains": {
-        "oneOf": [
-          {
-            "type": "string",
-            "description": "A simple string to check for."
-          },
-          {
-            "type": "object",
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "value": {
-                      "oneOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "object",
-                          "instanceof": "RegExp"
-                        }
-                      ]
-                    },
-                    "minNumberOfOccurrences": {
-                      "type": "integer",
-                      "description": "Minimum number of occurrences required.",
-                      "minimum": 1
-                    },
-                    "weight": {
-                      "type": "number",
-                      "description": "Weight applied if the condition matches.",
-                      "minimum": 0
-                    }
-                  },
-                  "required": ["value"]
-                }
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "specialCharacters": {
-                    "type": "boolean",
-                    "const": true
-                  },
-                  "allowedCharacters": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "A list of allowed characters."
-                  },
-                  "weight": {
-                    "type": "number",
-                    "description": "Weight applied if special characters match.",
-                    "minimum": 0
-                  }
-                },
-                "required": ["specialCharacters"]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "similarity": {
-                    "type": "number",
-                    "description": "The similarity threshold between 'toCheck' and 'value'.",
-                    "minimum": 0,
-                    "maximum": 1
-                  },
-                  "value": {
-                    "type": "string",
-                    "description": "The string to check for similarity."
-                  },
-                  "weight": {
-                    "type": "number",
-                    "description": "Weight applied if similarity matches.",
-                    "minimum": 0
-                  }
-                },
-                "required": ["similarity", "value"]
-              }
-            ]
-          }
-        ]
-      },
-      "preprocessing": {
-        "oneOf": [
-          {
-            "type": "boolean",
-            "description": "Indicates whether to preprocess input before comparison."
-          },
-          {
-            "type": "object",
-            "properties": {
-              "authorName": {
-                "oneOf": [
-                  {
-                    "type": "boolean"
-                  },
-                  {
-                    "$ref": "#/definitions/NormalizeOptions"
-                  }
-                ]
-              },
-              "comment": {
-                "oneOf": [
-                  {
-                    "type": "boolean"
-                  },
-                  {
-                    "$ref": "#/definitions/NormalizeOptions"
-                  }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      "weight": {
-        "type": "number",
-        "description": "Added weight if any of the 'contains' matches.",
-        "minimum": 0
-      },
-      "minNumberOfOccurrences": {
-        "type": "integer",
-        "description": "Minimum number of occurrences to trigger the red flag.",
-        "minimum": 1
-      },
-      "maxWeight": {
-        "type": "number",
-        "description": "Maximum weight this red flag can accumulate.",
-        "minimum": 0
+  "type": "object",
+  "required": [
+    "name",
+    "flags"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the configuration."
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/RedFlag"
       }
     }
   },
   "definitions": {
+    "RedFlag": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "contains"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the red flag."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the red flag."
+        },
+        "toCheck": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "authorName",
+              "comment"
+            ]
+          },
+          "description": "The fields to check, either 'authorName' or 'comment'."
+        },
+        "contains": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "A simple string to check for."
+            },
+            {
+              "type": "object",
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "object",
+                            "instanceof": "RegExp"
+                          }
+                        ]
+                      },
+                      "minNumberOfOccurrences": {
+                        "type": "integer",
+                        "description": "Minimum number of occurrences required.",
+                        "minimum": 1
+                      },
+                      "weight": {
+                        "type": "number",
+                        "description": "Weight applied if the condition matches.",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ]
+                  }
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "specialCharacters": {
+                      "type": "boolean",
+                      "const": true
+                    },
+                    "allowedCharacters": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "A list of allowed characters."
+                    },
+                    "weight": {
+                      "type": "number",
+                      "description": "Weight applied if special characters match.",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "specialCharacters"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "similarity": {
+                      "type": "number",
+                      "description": "The similarity threshold between 'toCheck' and 'value'.",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "The string to check for similarity."
+                    },
+                    "weight": {
+                      "type": "number",
+                      "description": "Weight applied if similarity matches.",
+                      "minimum": 0
+                    }
+                  },
+                  "required": [
+                    "similarity",
+                    "value"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "preprocessing": {
+          "oneOf": [
+            {
+              "type": "boolean",
+              "description": "Indicates whether to preprocess input before comparison."
+            },
+            {
+              "type": "object",
+              "properties": {
+                "authorName": {
+                  "oneOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "$ref": "#/definitions/NormalizeOptions"
+                    }
+                  ]
+                },
+                "comment": {
+                  "oneOf": [
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "$ref": "#/definitions/NormalizeOptions"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "weight": {
+          "type": "number",
+          "description": "Added weight if any of the 'contains' matches.",
+          "minimum": 0
+        },
+        "minNumberOfOccurrences": {
+          "type": "integer",
+          "description": "Minimum number of occurrences to trigger the red flag.",
+          "minimum": 1
+        },
+        "maxWeight": {
+          "type": "number",
+          "description": "Maximum weight this red flag can accumulate.",
+          "minimum": 0
+        }
+      }
+    },
     "NormalizeOptions": {
       "type": "object",
       "properties": {

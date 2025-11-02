@@ -1,24 +1,9 @@
 import { NormalizeOptions } from './normalizeString'
 
-export type ContainsWithOptions =
-  | { value: string | RegExp; weight?: number }
-  | {
-      value: (string | RegExp)[]
-      /** If not set, defaults to all. */
-      minNumberOfOccurrences?: number
-      weight?: number
-    }
-  | {
-      specialCharacters: true
-      allowedCharacters?: string[]
-      weight?: number
-    }
-  | {
-      /** Percentage of at least how similar the "toCheck" and "value" should be (0 - 1). */
-      similarity: number
-      value: string
-      weight?: number
-    }
+export type RedFlagsConfig = {
+  name: string
+  flags: RedFlag[]
+}
 
 export type RedFlag = {
   id: string
@@ -47,8 +32,27 @@ export type RedFlag = {
   maxWeight?: number
 }
 
-// const RedFlagTemplates = {
-const RedFlagTemplates: Record<string, RedFlag> = {
+export type ContainsWithOptions =
+  | { value: string | RegExp; weight?: number }
+  | {
+      value: (string | RegExp)[]
+      /** If not set, defaults to all. */
+      minNumberOfOccurrences?: number
+      weight?: number
+    }
+  | {
+      specialCharacters: true
+      allowedCharacters?: string[]
+      weight?: number
+    }
+  | {
+      /** Percentage of at least how similar the "toCheck" and "value" should be (0 - 1). */
+      similarity: number
+      value: string
+      weight?: number
+    }
+
+export const RedFlagTemplates = {
   makeshiftCryptocurrencyName: {
     id: 'makeshift-crypto-name',
     name: 'Makeshift crypto currency name',
@@ -192,8 +196,11 @@ const RedFlagTemplates: Record<string, RedFlag> = {
       },
     ],
   },
-}
+} satisfies Record<string, RedFlag>
 
-// const _typescriptRedFlagTemplatesCheck: Record<keyof typeof RedFlagTemplates, RedFlag> = RedFlagTemplates
-
-export default RedFlagTemplates
+export const RedFlagConfigTemplates = {
+  CryptoBots: {
+    name: 'Crypto Bots',
+    flags: Object.values(RedFlagTemplates),
+  },
+} satisfies Record<string, RedFlagsConfig>
