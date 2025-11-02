@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "author": "Lauri Methuen",
-  "license": "UNLICENSED",
+  "license": "GPL-3.0-or-later",
   "description": "Library for analyzing YouTube video for scam comments",
   "type": "module",
   "main": "./dist/index.js",

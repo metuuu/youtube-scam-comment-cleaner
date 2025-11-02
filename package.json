@@ -4,7 +4,11 @@
   "description": "",
   "author": "Lauri Methuen",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metuuu/youtube-scam-comment-cleaner.git"
+  },
   "scripts": {
     "install": "npm install --prefix ./comment-analysis; npm install --force --prefix ./web",
     "build": "npm run build --prefix ./comment-analysis; npm run build --prefix ./web",

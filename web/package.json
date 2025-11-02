@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "author": "Lauri Methuen",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
