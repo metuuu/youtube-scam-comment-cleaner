@@ -1,20 +1,19 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node 20",
-  "_version": "20.1.0",
+  "_version": "22.0.0",
 
   "compilerOptions": {
     "lib": ["es2023"],
-    "module": "node16",
+    "module": "ESNext",
     "target": "es2022",
 
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node16",
+    "moduleResolution": "bundler",
 
     "allowJs": true,
     "outDir": "./dist"
   },
-  "exclude": ["node_modules", "dist", "cli", "output"],
+  "exclude": ["node_modules", "dist", "cli", "output"]
 }

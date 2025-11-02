@@ -1,12 +1,11 @@
 import { youtube_v3 } from '@googleapis/youtube'
-import normalizeString, { NormalizeOptions } from './normalizeString.js'
-import { ContainsWithOptions, RedFlag } from './RedFlags.js'
-import removeAccentsAndDiacritics from './removeAccentsAndDiacritics.js'
-import stringSimilarity from './stringSimilarity.js'
-import getSpecialCharacterRegExp from './getSpecialCharacterRegExp.js'
+import normalizeString, { NormalizeOptions } from './normalizeString'
+import { ContainsWithOptions, RedFlag } from './RedFlags'
+import removeAccentsAndDiacritics from './removeAccentsAndDiacritics'
+import stringSimilarity from './stringSimilarity'
+import getSpecialCharacterRegExp from './getSpecialCharacterRegExp'
 
 export default async function analyzeComment({ channel, comment, redFlags }: { channel: youtube_v3.Schema$Channel, comment: youtube_v3.Schema$Comment, redFlags: RedFlag[] }) {
-
   const commentSnippet = comment!.snippet!
   const channelSnippet = channel!.snippet!
 

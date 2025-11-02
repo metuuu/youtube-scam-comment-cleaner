@@ -1,6 +1,6 @@
-import Counterparts from './Counterparts.js'
-import getSpecialCharacterRegExp from './getSpecialCharacterRegExp.js'
-import removeAccentsAndDiacriticsFunc from './removeAccentsAndDiacritics.js'
+import Counterparts from './Counterparts'
+import getSpecialCharacterRegExp from './getSpecialCharacterRegExp'
+import removeAccentsAndDiacriticsFunc from './removeAccentsAndDiacritics'
 
 export type NormalizeOptions = {
   removeNumbers?: boolean,

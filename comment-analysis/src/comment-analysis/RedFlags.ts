@@ -1,4 +1,4 @@
-import { NormalizeOptions } from "./normalizeString.js"
+import { NormalizeOptions } from "./normalizeString"
 
 export type ContainsWithOptions =
     | { value: string | RegExp, weight?: number }

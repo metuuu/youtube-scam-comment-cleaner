@@ -1,9 +1,9 @@
-import analyzeComment from './src/comment-analysis/analyzeComment.js'
-import { RedFlag } from "./src/comment-analysis/RedFlags.js"
-import getChannel from "./src/getChannel.js"
-import getComments from './src/getComments.js'
-import getThreads from "./src/getThreads.js"
-import getVideo from './src/getVideo.js'
+import analyzeComment from './src/comment-analysis/analyzeComment'
+import { RedFlag } from "./src/comment-analysis/RedFlags"
+import getChannel from "./src/getChannel"
+import getComments from './src/getComments'
+import getThreads from "./src/getThreads"
+import getVideo from './src/getVideo'
 
 export type AnalyzeOptions = {
   redFlagWeightThreshold: number
@@ -17,7 +17,6 @@ export type AnalyzeOptions = {
 
 const analyze = async (options: AnalyzeOptions) => {
   const { redFlags, redFlagWeightThreshold, youtubeApiKey, youtubeVideoId, commentQueryOrder, maxTopLevelComments = 100, maxCommentsInThread = 100 } = options
-
   const output: Record<string, any[]> = {}
 
   // Get channel id from video
