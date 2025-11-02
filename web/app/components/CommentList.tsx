@@ -1,6 +1,8 @@
+import AlertDialog from '@/components/AlertDialog'
 import FlexColumn from '@/components/FlexColumn'
 import FlexRow from '@/components/FlexRow'
 import PromptDialog from '@/components/PromptDialog'
+import { Comment } from '@metuuu/comment-analysis'
 import hideComment from '@metuuu/filter-youtube-comments/src/hideComment'
 import { IosShare } from '@mui/icons-material'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -16,9 +18,7 @@ import {
 import { useWindowSize } from '@uidotdev/usehooks'
 import React, { useEffect, useRef, useState } from 'react'
 import useFilters from '../hooks/useFilters'
-import { Comment } from '../input/comments'
 import CommentListItem from './CommentListItem'
-import AlertDialog from '@/components/AlertDialog'
 
 const CommentList = ({ apiKey, comments }: { apiKey: string; comments: Comment[] }) => {
   'use memo'
@@ -123,7 +123,7 @@ const CommentList = ({ apiKey, comments }: { apiKey: string; comments: Comment[]
             .filter(({ id }) => selectedComments.has(id))
             // Add disabled property to disabled red flags
             .map((c) => {
-              const updated = { ...c }
+              const updated: Comment = { ...c }
               updated.redFlags = updated.redFlags.map((rf) => {
                 if (!disabledRedFlags.includes(rf.id)) return rf
                 return { ...rf, disabled: true }

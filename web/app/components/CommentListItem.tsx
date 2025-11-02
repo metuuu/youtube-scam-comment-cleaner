@@ -2,6 +2,8 @@
 import Absolute from '@/components/Absolute'
 import FlexColumn from '@/components/FlexColumn'
 import FlexRow from '@/components/FlexRow'
+import sumByProperty from '@/utils/sumByProperty'
+import { Comment } from '@metuuu/comment-analysis'
 import { Info, InfoOutlined } from '@mui/icons-material'
 import {
   Avatar,
@@ -15,8 +17,6 @@ import {
 import { useHover } from '@uidotdev/usehooks'
 import { formatDistance } from 'date-fns'
 import { useState } from 'react'
-import { Comment } from '../input/comments'
-import sumByProperty from '@/utils/sumByProperty'
 
 const CommentListItem = (props: {
   comment: Comment

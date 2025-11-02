@@ -1,9 +1,10 @@
 import { youtube_v3 } from '@googleapis/youtube'
+import { CommentRedFlag } from '../..'
+import getSpecialCharacterRegExp from './getSpecialCharacterRegExp'
 import normalizeString, { NormalizeOptions } from './normalizeString'
 import { ContainsWithOptions, RedFlag } from './RedFlags'
 import removeAccentsAndDiacritics from './removeAccentsAndDiacritics'
 import stringSimilarity from './stringSimilarity'
-import getSpecialCharacterRegExp from './getSpecialCharacterRegExp'
 
 export default async function analyzeComment({ channel, comment, redFlags }: { channel: youtube_v3.Schema$Channel, comment: youtube_v3.Schema$Comment, redFlags: RedFlag[] }) {
   const commentSnippet = comment!.snippet!
@@ -12,7 +13,7 @@ export default async function analyzeComment({ channel, comment, redFlags }: { c
   // Ignore channel author comments
   if (commentSnippet!.authorChannelId!.value === channel.id) return { comment, redFlags: [], totalRedFlagWeight: 0 }
 
-  let triggeredRedFlags: { id: string; name: string; weight: number; }[] = []
+  let triggeredRedFlags: CommentRedFlag[] = []
   let totalTriggeredRedFlagWeight = 0
 
   const channelDetails = {

@@ -1,6 +1,7 @@
 'use client'
 import FlexColumn from '@/components/FlexColumn'
-import analyze from '@metuuu/filter-youtube-comments'
+import FlexRow from '@/components/FlexRow'
+import analyze, { Comment } from '@metuuu/filter-youtube-comments'
 import RedFlagTemplates, {
   RedFlag,
 } from '@metuuu/filter-youtube-comments/src/comment-analysis/RedFlags'
@@ -15,12 +16,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import CommentList from './components/CommentList'
-import { errorToMessage } from './utils/error-utils'
-import { Comment } from './input/comments'
 import styles from './page.module.css'
-import FlexRow from '@/components/FlexRow'
+import { errorToMessage } from './utils/error-utils'
 
 export default function Home() {
   'use memo'

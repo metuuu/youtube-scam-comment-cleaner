@@ -2,9 +2,9 @@
 import FlexRow from '@/components/FlexRow'
 import areArraysEqual from '@/utils/areArraysEqual'
 import sumByProperty from '@/utils/sumByProperty'
+import { Comment } from '@metuuu/comment-analysis'
 import { Checkbox, Chip, FormControlLabel, Slider, Typography } from '@mui/material'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Comment } from '../input/comments'
 
 const useFilters = ({
   comments,

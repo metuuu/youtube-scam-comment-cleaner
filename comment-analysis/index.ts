@@ -15,9 +15,30 @@ export type AnalyzeOptions = {
   commentQueryOrder?: 'time' | 'relevance'
 }
 
+export type CommentRedFlag = {
+  id: string
+  name: string
+  weight: number
+}
+
+export type Comment = {
+  id: string
+  authorChannelId: string
+  authorChannelUrl: string
+  authorProfileImageUrl: string
+  authorDisplayName: string
+  textOriginal: string
+  likeCount: number
+  updatedAt: string
+  isCommentThread?: boolean
+  numOfReplies?: number
+  parentId?: string
+  redFlags: CommentRedFlag[]
+}
+
 const analyze = async (options: AnalyzeOptions) => {
   const { redFlags, redFlagWeightThreshold, youtubeApiKey, youtubeVideoId, commentQueryOrder, maxTopLevelComments = 100, maxCommentsInThread = 100 } = options
-  const output: Record<string, any[]> = {}
+  const output: { [commentId: string]: Comment[] } = {}
 
   // Get channel id from video
   const video = await getVideo({ videoId: youtubeVideoId, apiKey: youtubeApiKey })
@@ -61,15 +82,15 @@ const analyze = async (options: AnalyzeOptions) => {
           if (!output[topLevelCommentId]) output[topLevelCommentId] = []
           const commentSnippet = comment!.snippet!
           output[topLevelCommentId].push({
-            id: comment.id,
-            authorChannelId: commentSnippet.authorChannelId!.value,
-            authorChannelUrl: commentSnippet.authorChannelUrl,
-            authorProfileImageUrl: commentSnippet.authorProfileImageUrl,
-            authorDisplayName: commentSnippet.authorDisplayName,
-            textOriginal: commentSnippet.textOriginal,
-            likeCount: commentSnippet.likeCount,
-            parentId: commentSnippet.parentId,
-            updatedAt: commentSnippet.updatedAt,
+            id: comment.id!,
+            authorChannelId: commentSnippet.authorChannelId!.value!,
+            authorChannelUrl: commentSnippet.authorChannelUrl!,
+            authorProfileImageUrl: commentSnippet.authorProfileImageUrl!,
+            authorDisplayName: commentSnippet.authorDisplayName!,
+            textOriginal: commentSnippet.textOriginal!,
+            likeCount: commentSnippet.likeCount!,
+            parentId: commentSnippet.parentId ?? undefined,
+            updatedAt: commentSnippet.updatedAt!,
               ...((!commentSnippet.parentId && thread.snippet?.totalReplyCount || 0) > 0 && {
               isCommentThread: true,
               numOfReplies: thread.snippet!.totalReplyCount!,
