@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, ElementType } from 'react'
+import React, { ElementType, PropsWithChildren } from 'react'
 
 const Absolute = <TAs extends ElementType = 'div'>(
   props: PropsWithChildren<

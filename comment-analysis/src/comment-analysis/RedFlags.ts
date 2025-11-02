@@ -1,35 +1,31 @@
-import { NormalizeOptions } from "./normalizeString"
+import { NormalizeOptions } from './normalizeString'
 
 export type ContainsWithOptions =
-    | { value: string | RegExp, weight?: number }
-    | {
-      value: (string | RegExp)[],
+  | { value: string | RegExp; weight?: number }
+  | {
+      value: (string | RegExp)[]
       /** If not set, defaults to all. */
-      minNumberOfOccurrences?: number,
+      minNumberOfOccurrences?: number
       weight?: number
     }
-    | {
-      specialCharacters: true,
-      allowedCharacters?: string[],
-      weight?: number,
+  | {
+      specialCharacters: true
+      allowedCharacters?: string[]
+      weight?: number
     }
-    | {
+  | {
       /** Percentage of at least how similar the "toCheck" and "value" should be (0 - 1). */
-      similarity: number,
-      value: string,
-      weight?: number,
+      similarity: number
+      value: string
+      weight?: number
     }
 
 export type RedFlag = {
-  id: string,
-  name: string,
+  id: string
+  name: string
   // TODO: Add min/max length comment filters
   toCheck?: ('authorName' | 'comment')[]
-  contains:
-  | string
-  | RegExp
-  | ContainsWithOptions
-  | ContainsWithOptions[]
+  contains: string | RegExp | ContainsWithOptions | ContainsWithOptions[]
 
   /**
    * If the input should be processed before comparison.
@@ -39,31 +35,30 @@ export type RedFlag = {
     | boolean
     | NormalizeOptions
     | {
-      authorName?: boolean | NormalizeOptions,
-      comment?: boolean | NormalizeOptions,
-    }
+        authorName?: boolean | NormalizeOptions
+        comment?: boolean | NormalizeOptions
+      }
 
   /** Added weight if any of the contains matches. */
   weight?: number
   /** If not set, defaults to 1 */
   minNumberOfOccurrences?: number
   /** Maximum amount of weight this red flag can cumulate (when "contains" is an array with multiple values and weights). */
-  maxWeight?: number,
+  maxWeight?: number
 }
-
 
 // const RedFlagTemplates = {
 const RedFlagTemplates: Record<string, RedFlag> = {
   makeshiftCryptocurrencyName: {
-    id: "makeshift-crypto-name",
+    id: 'makeshift-crypto-name',
     name: 'Makeshift crypto currency name',
     weight: 4,
     toCheck: ['comment'],
     preprocessing: { makeLowercase: false, removeWhitespace: false },
-    contains: /[A-Z$£€₿]{2,3}[0-9]{2,3}[A-Z$£€₿]{1,2}/
+    contains: /[A-Z$£€₿]{2,3}[0-9]{2,3}[A-Z$£€₿]{1,2}/,
   },
   reachMeOut: {
-    id: "reach-me-out",
+    id: 'reach-me-out',
     name: 'Reach me out',
     minNumberOfOccurrences: 2,
     weight: 6,
@@ -79,31 +74,57 @@ const RedFlagTemplates: Record<string, RedFlag> = {
     ],
   },
   containsBotEscapeCharacter: {
-    id: "bot-escape-character",
+    id: 'bot-escape-character',
     name: 'Bot escape character',
     weight: 2,
     contains: { value: "\\'s" },
     preprocessing: false,
   },
   containsMoneySymbols: {
-    id: "money-symbols",
+    id: 'money-symbols',
     name: 'Contains money symbols',
     weight: 2,
     contains: {
-      value: ['$', '€', '£', '¥', '₣', '₹', '₿', '🏦', '💵', '💶', '💷', '💴', '📈', '💰', '🪙', '📉', '💳', '💱', '🫰', '💲', '💸', '🤑', '👛', '🎰', '🚀'],
+      value: [
+        '$',
+        '€',
+        '£',
+        '¥',
+        '₣',
+        '₹',
+        '₿',
+        '🏦',
+        '💵',
+        '💶',
+        '💷',
+        '💴',
+        '📈',
+        '💰',
+        '🪙',
+        '📉',
+        '💳',
+        '💱',
+        '🫰',
+        '💲',
+        '💸',
+        '🤑',
+        '👛',
+        '🎰',
+        '🚀',
+      ],
       minNumberOfOccurrences: 1,
     },
-    preprocessing: false
+    preprocessing: false,
   },
   containsPhoneNumber: {
-    id: "phone-number",
+    id: 'phone-number',
     name: 'Contains phone number',
     weight: 3,
     contains: /\+\d{7}/,
-    preprocessing: { whitelistedSpecialCharacters: ['+'] }
+    preprocessing: { whitelistedSpecialCharacters: ['+'] },
   },
   profileNameContainsUncommonSpecialCharacters: {
-    id: "profile-name-uncommon-special-characters",
+    id: 'profile-name-uncommon-special-characters',
     name: 'Profile name contains uncommon special characters',
     weight: 1,
     toCheck: ['authorName'],
@@ -114,28 +135,28 @@ const RedFlagTemplates: Record<string, RedFlag> = {
     preprocessing: false,
   },
   commentContainsUncommonSpecialCharacters: {
-    id: "comment-uncommon-special-characters",
+    id: 'comment-uncommon-special-characters',
     name: 'Contains uncommon special characters',
     weight: 1,
     toCheck: ['comment'],
     contains: {
       specialCharacters: true as const,
-      allowedCharacters: ["@", "'", '"', '-', '_', '’', ',', '?', '!', ':', '.', '(', ')', '/'],
+      allowedCharacters: ['@', "'", '"', '-', '_', '’', ',', '?', '!', ':', '.', '(', ')', '/'],
     },
     preprocessing: false,
   },
   similarProfileName: {
-    id: "similar-profile-name",
+    id: 'similar-profile-name',
     name: 'Has similar profile name',
     weight: 5,
     toCheck: ['authorName'],
     contains: {
       similarity: 0.8,
       value: '{{channelName}}',
-    }
+    },
   },
   investmentGuruPromotion: {
-    id: "investment-guru-promotion",
+    id: 'investment-guru-promotion',
     name: 'Investment guru promotion',
     weight: 6,
     minNumberOfOccurrences: 2,

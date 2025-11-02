@@ -1,5 +1,4 @@
 export const LetterCounterparts = {
-
   // Mathematical Alphanumeric Symbols Block
   // https://charbase.com/block/mathematical-alphanumeric-symbols
   '𝐀': { code: 'U+1D400', counterpart: 'A' },
@@ -821,9 +820,7 @@ export const LetterCounterparts = {
   '🇿': { code: 'U+1F1FF', counterpart: 'Z' },
 }
 
-
 export const NumberCounterparts = {
-
   // Mathematical Alphanumeric Symbols Block
   // https://charbase.com/block/mathematical-alphanumeric-symbols
   '𝟎': { code: 'U+1D7CE', counterpart: 0 },
@@ -1023,7 +1020,6 @@ export const NumberCounterparts = {
   '🄉': { code: 'U+1F109', counterpart: '8' },
   '🄊': { code: 'U+1F10A', counterpart: '9' },
 }
-
 
 const OtherCounterparts = {
   // Mathematical Alphanumeric Symbols Block
@@ -1322,10 +1318,9 @@ const OtherCounterparts = {
   '𝟋': { code: 'U+1D7CB', counterpart: 'DIGAMMA' },
 }
 
-
 export const PlusSymbolCounterparts = {
   '±': { counterpart: '+' },
-  '十': { counterpart: '+' },
+  十: { counterpart: '+' },
   '⼗': { counterpart: '+' },
   '㈩': { counterpart: '+' },
   '㊉': { counterpart: '+' },
@@ -1344,7 +1339,6 @@ export const PlusSymbolCounterparts = {
 }
 
 // 'ⁱ', 'ₐ', 'ₑ', 'ₒ', 'ₓ', 'ₔ'
-
 
 const Counterparts = {
   ...LetterCounterparts,

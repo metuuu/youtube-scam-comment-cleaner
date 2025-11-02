@@ -20,7 +20,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@metuuu/comment-analysis": ["../comment-analysis"],
+      "@metuuu/comment-analysis": ["../comment-analysis"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

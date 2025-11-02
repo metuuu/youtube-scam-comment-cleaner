@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-
 export default async function hideComment({
   apiKey,
   commentId,

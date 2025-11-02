@@ -5,7 +5,7 @@ export default async function getComments({
   apiKey,
   parentId,
   maxResults,
-}: { apiKey: string} & Pick<youtube_v3.Params$Resource$Comments$List, 'parentId' | 'maxResults'>) {
+}: { apiKey: string } & Pick<youtube_v3.Params$Resource$Comments$List, 'parentId' | 'maxResults'>) {
   let allComments: youtube_v3.Schema$Comment[] = []
   let nextPageToken: any
   do {
@@ -16,11 +16,13 @@ export default async function getComments({
     if (maxResults) searchParams.append('maxResults', maxResults.toString())
     searchParams.append('part', 'snippet')
 
-    const listCommentsResponse = await axios.get<youtube_v3.Schema$CommentListResponse>(`https://www.googleapis.com/youtube/v3/comments?${searchParams.toString()}`)
-    allComments.push(...listCommentsResponse.data.items || [])
+    const listCommentsResponse = await axios.get<youtube_v3.Schema$CommentListResponse>(
+      `https://www.googleapis.com/youtube/v3/comments?${searchParams.toString()}`,
+    )
+    allComments.push(...(listCommentsResponse.data.items || []))
 
     nextPageToken = listCommentsResponse.data.nextPageToken
-  } while (maxResults && (allComments.length < maxResults && nextPageToken))
+  } while (maxResults && allComments.length < maxResults && nextPageToken)
 
   return allComments
 }

@@ -1,9 +1,15 @@
 import { youtube_v3 } from '@googleapis/youtube'
 import axios from 'axios'
 
-export default async function getThreads(
-  { videoId, order, apiKey, maxResults }: { apiKey: string, order?: 'time' | 'relevance' } & Pick<youtube_v3.Params$Resource$Commentthreads$List, 'videoId' | 'maxResults'>
-) {
+export default async function getThreads({
+  videoId,
+  order,
+  apiKey,
+  maxResults,
+}: { apiKey: string; order?: 'time' | 'relevance' } & Pick<
+  youtube_v3.Params$Resource$Commentthreads$List,
+  'videoId' | 'maxResults'
+>) {
   let allThreads: youtube_v3.Schema$CommentThread[] = []
   let nextPageToken: any
   do {
@@ -16,11 +22,14 @@ export default async function getThreads(
     // searchParams.append('moderationStatus', 'likelySpam')
     searchParams.append('part', 'snippet')
 
-    const listCommentThreadsResponse = await axios.get<youtube_v3.Schema$CommentThreadListResponse>(`https://www.googleapis.com/youtube/v3/commentThreads?${searchParams.toString()}`)
+    const listCommentThreadsResponse = await axios.get<youtube_v3.Schema$CommentThreadListResponse>(
+      `https://www.googleapis.com/youtube/v3/commentThreads?${searchParams.toString()}`,
+    )
 
-    if (listCommentThreadsResponse.data.items) allThreads.push(...listCommentThreadsResponse.data.items)
+    if (listCommentThreadsResponse.data.items)
+      allThreads.push(...listCommentThreadsResponse.data.items)
     nextPageToken = listCommentThreadsResponse.data.nextPageToken
-  } while (maxResults && (allThreads.length < maxResults && nextPageToken))
+  } while (maxResults && allThreads.length < maxResults && nextPageToken)
 
   return allThreads
 }

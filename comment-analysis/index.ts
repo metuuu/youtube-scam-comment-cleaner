@@ -1,8 +1,8 @@
 import analyzeComment from './src/comment-analysis/analyzeComment'
-import { RedFlag } from "./src/comment-analysis/RedFlags"
-import getChannel from "./src/getChannel"
+import { RedFlag } from './src/comment-analysis/RedFlags'
+import getChannel from './src/getChannel'
 import getComments from './src/getComments'
-import getThreads from "./src/getThreads"
+import getThreads from './src/getThreads'
 import getVideo from './src/getVideo'
 
 export type AnalyzeOptions = {
@@ -37,7 +37,15 @@ export type Comment = {
 }
 
 const analyze = async (options: AnalyzeOptions) => {
-  const { redFlags, redFlagWeightThreshold, youtubeApiKey, youtubeVideoId, commentQueryOrder, maxTopLevelComments = 100, maxCommentsInThread = 100 } = options
+  const {
+    redFlags,
+    redFlagWeightThreshold,
+    youtubeApiKey,
+    youtubeVideoId,
+    commentQueryOrder,
+    maxTopLevelComments = 100,
+    maxCommentsInThread = 100,
+  } = options
   const output: { [commentId: string]: Comment[] } = {}
 
   // Get channel id from video
@@ -47,10 +55,13 @@ const analyze = async (options: AnalyzeOptions) => {
   // Get channel author
   const channel = await getChannel({ channelId: video.snippet.channelId, apiKey: youtubeApiKey })
 
-
   // Get threads for video
-  const threads = await getThreads({ videoId: youtubeVideoId, apiKey: youtubeApiKey, maxResults: maxTopLevelComments, order: commentQueryOrder })
-
+  const threads = await getThreads({
+    videoId: youtubeVideoId,
+    apiKey: youtubeApiKey,
+    maxResults: maxTopLevelComments,
+    order: commentQueryOrder,
+  })
 
   // Analyze thread comments
   await Promise.all(
@@ -63,15 +74,20 @@ const analyze = async (options: AnalyzeOptions) => {
       // Analyze
       const analysisResults: Awaited<ReturnType<typeof analyzeComment>>[] = []
 
-      if (thread.snippet?.totalReplyCount === 0 || !maxCommentsInThread) { // single comment
+      if (thread.snippet?.totalReplyCount === 0 || !maxCommentsInThread) {
+        // single comment
         const result = await analyzeComment({ channel, comment: topLevelComment, redFlags })
         analysisResults.push(result)
-      }
-      else { // multiple comments
-        const comments = await getComments({ parentId: topLevelCommentId, apiKey: youtubeApiKey, maxResults: maxCommentsInThread })
+      } else {
+        // multiple comments
+        const comments = await getComments({
+          parentId: topLevelCommentId,
+          apiKey: youtubeApiKey,
+          maxResults: maxCommentsInThread,
+        })
         const results = await Promise.all([
           analyzeComment({ channel, comment: topLevelComment, redFlags }),
-          ...(comments || []).map((comment) => analyzeComment({ channel, comment, redFlags }))
+          ...(comments || []).map((comment) => analyzeComment({ channel, comment, redFlags })),
         ])
         analysisResults.push(...results)
       }
@@ -91,7 +107,7 @@ const analyze = async (options: AnalyzeOptions) => {
             likeCount: commentSnippet.likeCount!,
             parentId: commentSnippet.parentId ?? undefined,
             updatedAt: commentSnippet.updatedAt!,
-              ...((!commentSnippet.parentId && thread.snippet?.totalReplyCount || 0) > 0 && {
+            ...(((!commentSnippet.parentId && thread.snippet?.totalReplyCount) || 0) > 0 && {
               isCommentThread: true,
               numOfReplies: thread.snippet!.totalReplyCount!,
             }),
@@ -99,7 +115,7 @@ const analyze = async (options: AnalyzeOptions) => {
           })
         }
       }
-    })
+    }),
   )
 
   return output

@@ -3,11 +3,7 @@
   "type": "array",
   "items": {
     "type": "object",
-    "required": [
-      "id",
-      "name",
-      "contains"
-    ],
+    "required": ["id", "name", "contains"],
     "properties": {
       "id": {
         "type": "string",
@@ -21,10 +17,7 @@
         "type": "array",
         "items": {
           "type": "string",
-          "enum": [
-            "authorName",
-            "comment"
-          ]
+          "enum": ["authorName", "comment"]
         },
         "description": "The fields to check, either 'authorName' or 'comment'."
       },
@@ -67,9 +60,7 @@
                       "minimum": 0
                     }
                   },
-                  "required": [
-                    "value"
-                  ]
+                  "required": ["value"]
                 }
               },
               {
@@ -92,9 +83,7 @@
                     "minimum": 0
                   }
                 },
-                "required": [
-                  "specialCharacters"
-                ]
+                "required": ["specialCharacters"]
               },
               {
                 "type": "object",
@@ -115,10 +104,7 @@
                     "minimum": 0
                   }
                 },
-                "required": [
-                  "similarity",
-                  "value"
-                ]
+                "required": ["similarity", "value"]
               }
             ]
           }
