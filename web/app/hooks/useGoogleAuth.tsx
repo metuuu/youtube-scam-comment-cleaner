@@ -47,15 +47,6 @@ export function useGoogleAuth() {
   useEffect(() => {
     // Load stored user and client ID from localStorage
     if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem('googleUser')
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser))
-        } catch (e) {
-          console.error('Failed to parse stored user', e)
-        }
-      }
-
       const storedClientId = localStorage.getItem('googleClientId')
       if (storedClientId) {
         setClientId(storedClientId)
@@ -112,7 +103,6 @@ export function useGoogleAuth() {
             }
 
             setUser(googleUser)
-            localStorage.setItem('googleUser', JSON.stringify(googleUser))
             setIsLoading(false)
           } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to get user info')
