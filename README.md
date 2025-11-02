@@ -54,7 +54,6 @@ This application only uses these endpoints:
  - [Comments: setModerationStatus](https://developers.google.com/youtube/v3/docs/comments/setModerationStatus) **(requires OAuth2)**
 
 
-
 1. Create a Google Cloud Project: https://console.cloud.google.com/projectcreate
 2. Enable YouTube Data API v3: https://console.cloud.google.com/apis/api/youtube.googleapis.com
 3. Create the `API key` https://console.cloud.google.com/apis/api/youtube.googleapis.com/credentials from `+ CREATE CREDENTIALS` button.
@@ -69,6 +68,7 @@ You can either paste the YouTube API key to an input field or pre configure it t
 ```
 NEXT_PUBLIC_YOUTUBE_API_KEY=<youtube-api-key>
 ```
+
 
 ## Configuring OAuth2 (Required for moderating comments)
 
@@ -89,6 +89,7 @@ To enable the comment moderating feature, you need to set up Google OAuth2:
 
 Once copied, you can paste the Client ID to "Google OAuth Client ID" input field in the app and "Sign in with Google" button should appear.
 
+
 ## API Key quota
 
 Projects that enable the YouTube Data API have a default quota allocation of 10,000 units per day.
@@ -105,3 +106,31 @@ You can check your remaining quota from: https://console.cloud.google.com/apis/a
 Please read more info from Google's documentation and verify the values:
 - https://developers.google.com/youtube/v3/guides/quota_and_compliance_audits
 - https://developers.google.com/youtube/v3/determine_quota_cost
+
+
+## Configuring custom Red flags configuration `.json` file
+
+The app uses a default "<b>Crypto Bots</b>" configuration that tries to detect most common crypto scam comments.
+
+You can also provide your own configuration `.json` file via `LOAD CONFIG` button.
+
+### Configuring:
+
+Create `custom-red-flags.json` file with this content:
+```.json
+{
+  "$schema": "https://github.com/metuuu/youtube-scam-comment-cleaner/blob/main/comment-analysis/src/comment-analysis/red-flags-config-schema.json",
+  "name": "Custom Red Flags",
+  "flags": [
+    {}
+  ]
+}
+```
+
+If you open the file using a modern IDE, it should auto suggest available fields.
+
+The available configuration can also be found from:[red-flags-config-schema.json](comment-analysis/src/comment-analysis/red-flags-config-schema.json).
+
+The `.json` configuration is transformed to javascript object. See: [RedFlags.ts](comment-analysis/src/comment-analysis/RedFlags.ts).
+
+If you are interested of knowing how the comment analysis logic works, please see: [analyzeComment.ts](comment-analysis/src/comment-analysis/analyzeComment.ts).
