@@ -51,7 +51,7 @@ export default async function analyzeComment({
 
       if (check === 'comment') {
         // This is a special case handling. YouTube comments with @ reply contain "&ZeroWidthSpace;" before the @ symbol. We want to remove this because this doesn't show up to user and confuses red flags checker.
-        input = input.replace('^\u200B', '')
+        input = input.replace('\u200B', '')
       }
 
       let preprocessingToUse: NormalizeOptions | boolean = false
