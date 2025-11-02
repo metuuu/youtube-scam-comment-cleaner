@@ -120,7 +120,7 @@ const RedFlagTemplates: Record<string, RedFlag> = {
     toCheck: ['comment'],
     contains: {
       specialCharacters: true as const,
-      allowedCharacters: ["'", '"', '-', '_', '’', ',', '?', '!', ':', '.', '(', ')', '/'],
+      allowedCharacters: ["@", "'", '"', '-', '_', '’', ',', '?', '!', ':', '.', '(', ')', '/'],
     },
     preprocessing: false,
   },
