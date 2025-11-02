@@ -70,7 +70,7 @@ const useFilters = ({
           style={{ marginTop: -5 }}
           label={
             <Typography color="textSecondary" variant="caption">
-              Only visibility
+              Only visibility (keep weight)
             </Typography>
           }
           control={
