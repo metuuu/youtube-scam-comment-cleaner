@@ -11,7 +11,7 @@
   },
   "scripts": {
     "install": "npm install --prefix ./comment-analysis; npm install --force --prefix ./web",
-    "build": "npm run build --prefix ./comment-analysis; npm run build --prefix ./web",
+    "build": "npm run build --prefix ./web",
     "start": "npm run start --prefix ./web",
     "dev": "npm run dev --prefix ./web"
   }
