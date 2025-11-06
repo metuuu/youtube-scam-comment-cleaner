@@ -22,12 +22,10 @@ import { errorToMessage } from '../utils/error-utils'
 import CommentListItem from './CommentListItem'
 
 const CommentList = ({
-  apiKey,
   comments,
   accessToken,
   isAuthenticated,
 }: {
-  apiKey: string
   comments: Comment[]
   accessToken?: string
   isAuthenticated: boolean

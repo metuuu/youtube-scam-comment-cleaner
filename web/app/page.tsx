@@ -303,7 +303,6 @@ export default function Home() {
 
           <CommentList
             comments={comments!}
-            apiKey={youtubeApiKey}
             accessToken={user?.accessToken}
             isAuthenticated={isAuthenticated}
           />
