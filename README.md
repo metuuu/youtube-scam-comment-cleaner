@@ -117,6 +117,9 @@ You can also provide your own configuration `.json` file via `LOAD CONFIG` butto
 ### Configuring the `.json` file
 
 Create `custom-red-flags.json` file with this content:
+
+FIXME: Why doesn't this work? "$schema" works when pointing to local file but not when pointing to file under raw.githubusercontent.com
+
 ```.json
 {
   "$schema": "https://raw.githubusercontent.com/metuuu/youtube-scam-comment-cleaner/main/comment-analysis/src/comment-analysis/red-flags-config-schema.json",
