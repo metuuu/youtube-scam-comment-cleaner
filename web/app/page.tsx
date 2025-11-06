@@ -20,6 +20,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import CommentList from './components/CommentList'
+import GoogleSignInButton from './components/GoogleSignInButton'
 import RedFlagConfigSection from './components/RedFlagConfigSection'
 import { useGoogleAuth } from './hooks/useGoogleAuth'
 import styles from './page.module.css'
@@ -35,7 +36,6 @@ export default function Home() {
     isConfigured,
     login,
     logout,
-    isLoading: isSigningIn,
     error: authError,
     clientId,
     updateClientId,
@@ -170,15 +170,9 @@ export default function Home() {
                 {isConfigured && (
                   <FlexColumn gap={8}>
                     {!isAuthenticated ? (
-                      <>
-                        <Button
-                          variant="outlined"
-                          color="secondary"
-                          onClick={login}
-                          disabled={isSigningIn}>
-                          {isSigningIn ? 'Signing in...' : 'Sign in with Google'}
-                        </Button>
-                      </>
+                      <div>
+                        <GoogleSignInButton onClick={login} />
+                      </div>
                     ) : (
                       <FlexRow
                         gap={8}
