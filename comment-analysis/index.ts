@@ -1,9 +1,9 @@
 import analyzeComment from './src/comment-analysis/analyzeComment'
 import { RedFlag } from './src/comment-analysis/RedFlags'
-import getChannel from './src/getChannel'
-import getComments from './src/getComments'
-import getThreads from './src/getThreads'
-import getVideo from './src/getVideo'
+import getChannel from './src/youtube-api/getChannel'
+import getComments from './src/youtube-api/getComments'
+import getThreads from './src/youtube-api/getThreads'
+import getVideo from './src/youtube-api/getVideo'
 
 export type AnalyzeOptions = {
   redFlagWeightThreshold: number

@@ -3,7 +3,7 @@ import FlexColumn from '@/components/FlexColumn'
 import FlexRow from '@/components/FlexRow'
 import PromptDialog from '@/components/PromptDialog'
 import { Comment } from '@metuuu/comment-analysis'
-import setCommentModerationStatus from '@metuuu/filter-youtube-comments/src/setCommentModerationStatus'
+import setCommentModerationStatus from '@metuuu/filter-youtube-comments/src/youtube-api/setCommentModerationStatus'
 import { IosShare } from '@mui/icons-material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import {
