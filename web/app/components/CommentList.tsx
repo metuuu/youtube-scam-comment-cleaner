@@ -211,7 +211,6 @@ const CommentList = ({
                   variant="contained"
                   disabled={!selectedComments.size}
                   onClick={() => {
-                    return setIsHideCommentsPromptOpen(true)
                     if (!isAuthenticated || !accessToken) setIsAuthAlertOpen(true)
                     else setIsHideCommentsPromptOpen(true)
                   }}>
